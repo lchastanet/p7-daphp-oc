@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
+ * 
+ * @Serializer\ExclusionPolicy("ALL")
  */
 class Product
 {
@@ -19,21 +22,29 @@ class Product
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Serializer\Expose
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
+     * 
+     * @Serializer\Expose
      */
     private $description;
 
     /**
      * @ORM\Column(type="decimal", precision=6, scale=2)
+     * 
+     * @Serializer\Expose
      */
     private $price;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Serializer\Expose
      */
     private $serialNumber;
 

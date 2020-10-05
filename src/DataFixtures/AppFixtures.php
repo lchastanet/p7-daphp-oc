@@ -31,9 +31,7 @@ class AppFixtures extends Fixture
                 $user->setName($faker->userName);
                 $user->setPhoneNumber($faker->e164PhoneNumber);
 
-                $jwtManager = $this->container->get('lexik_jwt_authentication.jwt_manager');
-
-                $user->setToken($jwtManager->create($user));
+                $user->setToken(bin2hex(random_bytes(32)));
                 $user->setClient($client);
 
                 $manager->persist($user);
