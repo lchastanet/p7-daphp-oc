@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
+use App\Representation\Products;
 use JMS\Serializer\SerializerInterface;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -18,25 +20,39 @@ class ProductController extends AbstractController
     use ControllerTrait;
 
     /**
-     * @Route("/products", name="list_product", methods={"GET"})
+     * @Rest\Get("/products", name="list_products")
+     * @Rest\QueryParam(
+     *  name="limit",
+     *  requirements="\d+",
+     *  default="5",
+     *  description="The pagination limit"
+     * )
+     * @Rest\QueryParam(
+     *  name="offset",
+     *  requirements="\d+",
+     *  default="1",
+     *  description="The pagination offset"
+     * )
+     * @Rest\View()
      */
-    public function listProducts(ProductRepository $productRepository, SerializerInterface $serialize)
+    public function listProducts(ParamFetcherInterface $paramFetcher, ProductRepository $productRepository)
     {
-        $products = $productRepository->findAll();
+        $pager = $productRepository->getPaginated(
+            $paramFetcher->get('limit'),
+            $paramFetcher->get('offset')
+        );
 
-        $data = $serialize->serialize($products, 'json');
+        //dd($pager);
+        //dd(new Products($pager));
 
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return new Products($pager);
     }
 
     /**
      * @Rest\Get(
-     *     path = "/products/{id}",
-     *     name = "show_product",
-     *     requirements = {"id"="\d+"}
+     *  path = "/products/{id}",
+     *  name = "show_product",
+     *  requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 200)
      */
