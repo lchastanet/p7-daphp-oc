@@ -14,6 +14,7 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use App\Service\Paginator;
 
 class ProductController extends AbstractController
 {
@@ -22,30 +23,18 @@ class ProductController extends AbstractController
     /**
      * @Rest\Get("/products", name="list_products")
      * @Rest\QueryParam(
-     *  name="limit",
-     *  requirements="\d+",
-     *  default="5",
-     *  description="The pagination limit"
-     * )
-     * @Rest\QueryParam(
-     *  name="offset",
+     *  name="page",
      *  requirements="\d+",
      *  default="1",
-     *  description="The pagination offset"
+     *  description="The asked page"
      * )
      * @Rest\View()
      */
     public function listProducts(ParamFetcherInterface $paramFetcher, ProductRepository $productRepository)
     {
-        $pager = $productRepository->getPaginated(
-            $paramFetcher->get('limit'),
-            $paramFetcher->get('offset')
-        );
+        $paginator = new Paginator($productRepository);
 
-        //dd($pager);
-        //dd(new Products($pager));
-
-        return new Products($pager);
+        return $paginator->getPage($paramFetcher->get('page'), true);
     }
 
     /**
