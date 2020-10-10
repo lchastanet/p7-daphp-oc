@@ -83,18 +83,33 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/products", name="edit_product")
      * @Rest\View(StatusCode = 200)
-     * @ParamConverter("product", converter="fos_rest.request_body")
+     * @Rest\Put(
+     *     path = "/products/{id}",
+     *     name = "update_product",
+     *     requirements = {"id"="\d+"}
+     * )
+     * @ParamConverter("newProduct", converter="fos_rest.request_body")
      */
-    public function editProduct(Product $product)
+    public function updateAction(Product $product, Product $newProduct, ConstraintViolationList $violations)
     {
-        $manager = $this->getDoctrine()->getManager();
+        if (count($violations)) {
+            $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
+            foreach ($violations as $violation) {
+                $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
+            }
 
-        $manager->persist($product);
-        $manager->flush();
+            throw new ResourceValidationException($message);
+        }
 
-        return $this->view($product, Response::HTTP_OK, ['Location' => $this->generateUrl('show_product', ['id' => $product->getId(), UrlGeneratorInterface::ABSOLUTE_URL])]);
+        $product->setName($newProduct->getName());
+        $product->setDescription($newProduct->getDescription());
+        $product->setPrice($newProduct->getPrice());
+        $product->setSerialNumber($newProduct->getSerialNumber());
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return $product;
     }
 
     /**
@@ -104,7 +119,6 @@ class ProductController extends AbstractController
      *  requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 204)
-     * @ParamConverter("product", converter="fos_rest.request_body")
      */
     public function deleteProduct(Product $product)
     {
@@ -113,6 +127,6 @@ class ProductController extends AbstractController
         $manager->remove($product);
         $manager->flush();
 
-        return $this->view('', Response::HTTP_NO_CONTENT);
+        return;
     }
 }
