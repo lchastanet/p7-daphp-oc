@@ -71,7 +71,7 @@ class ProductController extends AbstractController
                 $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
             }
 
-            throw new ResourceValidationException($message, 400);
+            throw new ResourceValidationException($message);
         }
 
         $manager = $this->getDoctrine()->getManager();
@@ -91,7 +91,7 @@ class ProductController extends AbstractController
      * )
      * @ParamConverter("newProduct", converter="fos_rest.request_body")
      */
-    public function updateAction(Product $product, Product $newProduct, ConstraintViolationList $violations)
+    public function updateProduct(Product $product, Product $newProduct, ConstraintViolationList $violations)
     {
         if (count($violations)) {
             $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
