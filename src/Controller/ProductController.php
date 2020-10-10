@@ -3,18 +3,20 @@
 namespace App\Controller;
 
 use App\Entity\Product;
-use App\Repository\ProductRepository;
+use App\Service\Paginator;
 use App\Representation\Products;
+use App\Repository\ProductRepository;
 use JMS\Serializer\SerializerInterface;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use App\Exception\ResourceValidationException;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use App\Service\Paginator;
 
 class ProductController extends AbstractController
 {
@@ -53,10 +55,25 @@ class ProductController extends AbstractController
     /**
      * @Rest\Post("/products", name="create_product")
      * @Rest\View(StatusCode = 201)
-     * @ParamConverter("product", converter="fos_rest.request_body")
+     * @ParamConverter(
+     *  "product",
+     *  converter="fos_rest.request_body",
+     *  options={
+     *      "validator"={ "groups"="Create" }
+     *  }
+     * )
      */
-    public function createProduct(Product $product)
+    public function createProduct(Product $product, ConstraintViolationList $violations)
     {
+        if (count($violations)) {
+            $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
+            foreach ($violations as $violation) {
+                $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
+            }
+
+            throw new ResourceValidationException($message, 400);
+        }
+
         $manager = $this->getDoctrine()->getManager();
 
         $manager->persist($product);
