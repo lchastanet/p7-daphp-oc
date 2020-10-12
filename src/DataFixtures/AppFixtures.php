@@ -28,10 +28,10 @@ class AppFixtures extends Fixture
                 $user = new User();
 
                 $user->setEmail($faker->email);
-                $user->setName($faker->userName);
+                $user->setUserName($faker->userName);
                 $user->setPhoneNumber($faker->e164PhoneNumber);
 
-                $user->setToken(bin2hex(random_bytes(32)));
+                $user->setPassword(bin2hex(random_bytes(12)));
                 $user->setClient($client);
 
                 $manager->persist($user);
