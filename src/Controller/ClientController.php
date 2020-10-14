@@ -12,6 +12,7 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ClientController extends AbstractController
@@ -75,7 +76,7 @@ class ClientController extends AbstractController
     /**
      * @Rest\View(StatusCode = 200)
      * @Rest\Put(
-     *     path = "/products/{id}",
+     *     path = "/clients/{id}",
      *     name = "update_client",
      *     requirements = {"id"="\d+"}
      * )

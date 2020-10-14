@@ -14,6 +14,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class UserController extends AbstractController
 {
@@ -29,6 +30,7 @@ class UserController extends AbstractController
      *  description="The asked page"
      * )
      * @Rest\View()
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function listUsers(ParamFetcherInterface $paramFetcher, UserRepository $userRepository)
     {
