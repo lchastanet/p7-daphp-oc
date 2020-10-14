@@ -5,10 +5,9 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\Paginator;
 use App\Repository\UserRepository;
-use App\Exception\ResourceValidationException;
+use App\Service\ViolationsChecker;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -19,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class UserController extends AbstractController
 {
     use ControllerTrait;
+    use ViolationsChecker;
 
     /**
      * @Rest\Get("/users", name="list_users")
@@ -63,14 +63,7 @@ class UserController extends AbstractController
      */
     public function createUser(User $user, ConstraintViolationList $violations)
     {
-        if (count($violations)) {
-            $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
-            foreach ($violations as $violation) {
-                $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
-            }
-
-            throw new ResourceValidationException($message);
-        }
+        $this->checkViolations($violations);
 
         $manager = $this->getDoctrine()->getManager();
 
@@ -91,14 +84,7 @@ class UserController extends AbstractController
      */
     public function updateUser(User $user, User $newUser, ConstraintViolationList $violations)
     {
-        if (count($violations)) {
-            $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
-            foreach ($violations as $violation) {
-                $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
-            }
-
-            throw new ResourceValidationException($message);
-        }
+        $this->checkViolations($violations);
 
         $user->setUserName($newUser->getUserName());
         $user->setPassword($newUser->getPassword());
