@@ -36,7 +36,7 @@ class AppFixtures extends Fixture
         $user->setEmail('admin@bilemo.com');
         $user->setUserName('admin');
         $user->setPhoneNumber('+33836656565');
-        $user->setRoles(['ROLE_ADMIN']);
+        $user->setRoles(['ROLE_SUPER_ADMIN']);
         $user->setPassword($this->encoder->encodePassword($user, 'admin'));
         $user->setClient($client);
 
@@ -58,11 +58,28 @@ class AppFixtures extends Fixture
             for ($j = 0; $j < $limit; $j++) {
                 $user = new User();
 
+                // For security change 'password' by bin2hex(random_bytes(12))
                 $user->setEmail($faker->email);
-                $user->setUserName($faker->userName);
+                $user->setUserName($faker->unique()->userName);
                 $user->setPhoneNumber($faker->e164PhoneNumber);
                 $user->setRoles(['ROLE_USER']);
-                $user->setPassword($this->encoder->encodePassword($user, bin2hex(random_bytes(12))));
+                $user->setPassword($this->encoder->encodePassword($user, 'password'));
+                $user->setClient($client);
+
+                $manager->persist($user);
+            }
+
+            $limit = random_int(1, 3);
+
+            for ($j = 0; $j < $limit; $j++) {
+                $user = new User();
+
+                // For security change 'password' by bin2hex(random_bytes(12))
+                $user->setEmail($faker->email);
+                $user->setUserName($faker->unique()->userName);
+                $user->setPhoneNumber($faker->e164PhoneNumber);
+                $user->setRoles(['ROLE_ADMIN']);
+                $user->setPassword($this->encoder->encodePassword($user, 'password'));
                 $user->setClient($client);
 
                 $manager->persist($user);
