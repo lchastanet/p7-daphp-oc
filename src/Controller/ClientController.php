@@ -14,6 +14,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class ClientController extends AbstractController
 {
@@ -29,6 +30,7 @@ class ClientController extends AbstractController
      *  description="The asked page"
      * )
      * @Rest\View()
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function listClients(ParamFetcherInterface $paramFetcher, ClientRepository $clientRepository)
     {
@@ -44,6 +46,7 @@ class ClientController extends AbstractController
      *  requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 200)
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function showClient(Client $client)
     {
@@ -60,6 +63,7 @@ class ClientController extends AbstractController
      *      "validator"={ "groups"="Create" }
      *  }
      * )
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function createProduct(Client $client, ConstraintViolationList $violations)
     {
@@ -81,6 +85,7 @@ class ClientController extends AbstractController
      *     requirements = {"id"="\d+"}
      * )
      * @ParamConverter("newClient", converter="fos_rest.request_body")
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function updateProduct(Client $client, Client $newClient, ConstraintViolationList $violations)
     {
@@ -103,6 +108,7 @@ class ClientController extends AbstractController
      *  requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 204)
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function deleteProduct(Client $client)
     {

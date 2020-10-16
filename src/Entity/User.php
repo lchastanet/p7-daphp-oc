@@ -6,10 +6,15 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("userName")
+ * 
+ * @Serializer\ExclusionPolicy("ALL")
  */
 class User implements UserInterface
 {
@@ -17,37 +22,61 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
+     * @Serializer\Expose
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * 
+     * @Serializer\Expose
+     * 
+     * @Assert\NotBlank(groups={"Create"})
      */
     private $userName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Serializer\Expose
+     * 
+     * @Assert\NotBlank(groups={"Create"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Serializer\Expose
+     * 
+     * @Assert\NotBlank(groups={"Create"})
      */
     private $email;
 
     /**
      * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
+     * 
+     * @Serializer\Expose
+     * 
+     * @Assert\NotBlank(groups={"Create"})
      */
     private $client;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Serializer\Expose
+     * 
+     * @Assert\NotBlank(groups={"Create"})
      */
     private $password;
 
     /**
      * @ORM\Column(type="json")
+     * 
+     * @Serializer\Expose
      */
     private $roles;
 

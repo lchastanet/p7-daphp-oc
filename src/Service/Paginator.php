@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Doctrine\ORM\EntityRepository;
+use App\Exception\WrongPageException;
 
 class Paginator
 {
@@ -18,21 +19,17 @@ class Paginator
     public function __construct(EntityRepository $entityRepository, Int $limit = 5)
     {
         $this->entityRepository = $entityRepository;
-        $this->totalItems = (int) $this->loadTotal();
         $this->setLimit($limit);
-    }
-
-    private function loadTotal()
-    {
-        return $this->entityRepository
-            ->createQueryBuilder('e')
-            ->select('count(e.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 
     private function getDataSet()
     {
+        $this->totalItems = (int) $this->entityRepository
+            ->createQueryBuilder('e')
+            ->select('count(e.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
         return $this->entityRepository->createQueryBuilder('e')
             ->orderBy('e.id', $this->order)
             ->setMaxResults($this->limit)
@@ -41,23 +38,57 @@ class Paginator
             ->getResult();
     }
 
-    public function getPage($page = 1, $meta = false)
+    private function getFilteredDataSet($filter)
+    {
+        $field = array_keys($filter)[0];
+        $id = $filter[$field];
+
+        $this->totalItems = (int) $this->entityRepository
+            ->createQueryBuilder('e')
+            ->andWhere('e.' . $field . ' = :idClient')
+            ->setParameter('idClient', $id)
+            ->select('count(e.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $this->entityRepository
+            ->createQueryBuilder('e')
+            ->andWhere('e.' . $field . ' = :idClient')
+            ->setParameter('idClient', $id)
+            ->orderBy('e.id', $this->order)
+            ->setMaxResults($this->limit)
+            ->setFirstResult($this->offset)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getPage(Int $page = 1, bool $meta = false, array $filter = [])
     {
         if (!is_numeric($page)) {
             throw new \TypeError("The number of asked page must be an int!");
-        }
-
-        if ($page > $this->totalPages) {
-            throw new \Exception("The page that you are looking for, does not exist!");
         }
 
         $this->currentPage = (int) $page;
 
         if ($page > 1) {
             $this->offset = (int) ceil($page * $this->limit);
+
+            if ($page == 2) {
+                $this->offset = $this->limit;
+            }
         }
 
-        $dataSet = $this->getDataSet();
+        if (empty($filter)) {
+            $dataSet = $this->getDataSet();
+        } else {
+            $dataSet = $this->getFilteredDataSet($filter);
+        }
+
+        $this->totalPages = (int) ceil($this->totalItems / $this->limit);
+
+        if ($page > $this->totalPages) {
+            throw new WrongPageException("The page that you are looking for, does not exist!");
+        }
 
         if ($meta) {
             return $this->addMeta($dataSet);
@@ -92,8 +123,6 @@ class Paginator
         }
 
         $this->limit = $limit;
-
-        $this->totalPages = (int) round($this->totalItems / $this->limit);
 
         return $this;
     }

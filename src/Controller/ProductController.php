@@ -14,6 +14,8 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
 
 class ProductController extends AbstractController
 {
@@ -29,6 +31,7 @@ class ProductController extends AbstractController
      *  description="The asked page"
      * )
      * @Rest\View()
+     * @IsGranted("ROLE_USER")
      */
     public function listProducts(ParamFetcherInterface $paramFetcher, ProductRepository $productRepository)
     {
@@ -44,6 +47,7 @@ class ProductController extends AbstractController
      *  requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 200)
+     * @IsGranted("ROLE_USER")
      */
     public function showProduct(Product $product)
     {
@@ -60,6 +64,7 @@ class ProductController extends AbstractController
      *      "validator"={ "groups"="Create" }
      *  }
      * )
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function createProduct(Product $product, ConstraintViolationList $violations)
     {
@@ -81,6 +86,7 @@ class ProductController extends AbstractController
      *     requirements = {"id"="\d+"}
      * )
      * @ParamConverter("newProduct", converter="fos_rest.request_body")
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function updateProduct(Product $product, Product $newProduct, ConstraintViolationList $violations)
     {
@@ -103,6 +109,7 @@ class ProductController extends AbstractController
      *  requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 204)
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function deleteProduct(Product $product)
     {
