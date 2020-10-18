@@ -33,6 +33,12 @@ class User implements UserInterface
      * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 5,
+     *  max = 30,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $userName;
 
@@ -42,6 +48,12 @@ class User implements UserInterface
      * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 10,
+     *  max = 20,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $phoneNumber;
 
@@ -51,6 +63,7 @@ class User implements UserInterface
      * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Email(groups={"Create", "Modify"})
      */
     private $email;
 
@@ -70,6 +83,12 @@ class User implements UserInterface
      * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 10,
+     *  max = 50,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $password;
 

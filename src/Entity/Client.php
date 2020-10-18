@@ -26,25 +26,61 @@ class Client
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
      * @Serializer\Expose
+     * 
+     * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 5,
+     *  max = 30,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
      * @Serializer\Expose
+     * 
+     * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 10,
+     *  max = 100,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $address;
 
     /**
      * @ORM\Column(type="text")
+     * 
      * @Serializer\Expose
+     * 
+     * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 20,
+     *  max = 200,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
      * @Serializer\Expose
+     * 
+     * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 10,
+     *  max = 20,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $phoneNumber;
 
