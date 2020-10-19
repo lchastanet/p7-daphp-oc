@@ -65,7 +65,7 @@ class ClientController extends AbstractController
      * )
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
-    public function createProduct(Client $client, ConstraintViolationList $violations)
+    public function createClient(Client $client, ConstraintViolationList $violations)
     {
         $this->checkViolations($violations);
 
@@ -87,7 +87,7 @@ class ClientController extends AbstractController
      * @ParamConverter("newClient", converter="fos_rest.request_body")
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
-    public function updateProduct(Client $client, Client $newClient, ConstraintViolationList $violations)
+    public function updateClient(Client $client, Client $newClient, ConstraintViolationList $violations)
     {
         $this->checkViolations($violations);
 
@@ -110,7 +110,7 @@ class ClientController extends AbstractController
      * @Rest\View(StatusCode = 204)
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
-    public function deleteProduct(Client $client)
+    public function deleteClient(Client $client)
     {
         $manager = $this->getDoctrine()->getManager();
 
