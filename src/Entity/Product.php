@@ -59,7 +59,7 @@ class Product
      * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
-     * @Assert\Positive(groups={"Create, "Modify"})
+     * @Assert\Positive(groups={"Create"})
      */
     private $price;
 
