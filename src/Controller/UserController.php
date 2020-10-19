@@ -26,6 +26,13 @@ class UserController extends AbstractController
     use ControllerTrait;
     use ViolationsChecker;
 
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * @Rest\Get("/users", name="list_users")
      * @Rest\QueryParam(
@@ -37,15 +44,15 @@ class UserController extends AbstractController
      * @Rest\View(StatusCode = 200)
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function listUsers(ParamFetcherInterface $paramFetcher, UserRepository $userRepository, SecurityFilter $security)
+    public function listUsers(ParamFetcherInterface $paramFetcher, SecurityFilter $security)
     {
-        $paginator = new Paginator($userRepository);
+        $paginator = new Paginator($this->userRepository);
 
         if (in_array("ROLE_SUPER_ADMIN", $security->getUser()->getRoles())) {
             return $paginator->getPage($paramFetcher->get('page'), true);
         }
 
-        $loggedUser = $userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
+        $loggedUser = $this->userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
 
         $clientId = $loggedUser->getClient()->getId();
 
@@ -61,13 +68,13 @@ class UserController extends AbstractController
      * @Rest\View(StatusCode = 200)
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function showUser(User $user, UserRepository $userRepository, SecurityFilter $security)
+    public function showUser(User $user, SecurityFilter $security)
     {
         if (in_array("ROLE_SUPER_ADMIN", $security->getUser()->getRoles())) {
             return $user;
         }
 
-        $loggedUser = $userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
+        $loggedUser = $this->userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
 
         if ($loggedUser->getClient()->getId() != $user->getClient()->getId()) {
             throw new AccessDeniedException();
@@ -88,12 +95,12 @@ class UserController extends AbstractController
      * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function createUser(User $user, UserRepository $userRepository, ConstraintViolationList $violations, SecurityFilter $security, UserPasswordEncoderInterface $encoder)
+    public function createUser(User $user, ConstraintViolationList $violations, SecurityFilter $security, UserPasswordEncoderInterface $encoder)
     {
         $this->checkViolations($violations);
 
         if (!in_array("ROLE_SUPER_ADMIN", $security->getUser()->getRoles())) {
-            $loggedUser = $userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
+            $loggedUser = $this->userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
 
             $user->setClient($loggedUser->getClient());
             $user->setRoles(["ROLE_USER"]);
@@ -122,12 +129,12 @@ class UserController extends AbstractController
      * @ParamConverter("newUser", converter="fos_rest.request_body")
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function updateUser(User $user, User $newUser, ConstraintViolationList $violations, SecurityFilter $security, UserRepository $userRepository)
+    public function updateUser(User $user, User $newUser, ConstraintViolationList $violations, SecurityFilter $security)
     {
         $this->checkViolations($violations);
 
         if (!in_array("ROLE_SUPER_ADMIN", $security->getUser()->getRoles())) {
-            $loggedUser = $userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
+            $loggedUser = $this->userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
 
             if ($loggedUser->getClient()->getId() != $user->getClient()->getId()) {
                 throw new AccessDeniedException("You don't have the rights for modifying this user.");
@@ -158,10 +165,10 @@ class UserController extends AbstractController
      * @Rest\View(StatusCode = 204)
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function deleteUser(User $user, SecurityFilter $security, UserRepository $userRepository)
+    public function deleteUser(User $user, SecurityFilter $security)
     {
         if (!in_array("ROLE_SUPER_ADMIN", $security->getUser()->getRoles())) {
-            $loggedUser = $userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
+            $loggedUser = $this->userRepository->findOneBy(["userName" => $security->getUser()->getUsername()]);
 
             if ($loggedUser->getClient()->getId() != $user->getClient()->getId()) {
                 throw new AccessDeniedException("You don't have the rights for deleting this user.");
