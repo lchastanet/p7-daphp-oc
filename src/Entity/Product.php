@@ -27,7 +27,14 @@ class Product
      * @ORM\Column(type="string", length=255)
      * 
      * @Serializer\Expose
+     * 
      * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 5,
+     *  max = 30,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $name;
 
@@ -35,7 +42,14 @@ class Product
      * @ORM\Column(type="text")
      * 
      * @Serializer\Expose
+     * 
      * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 20,
+     *  max = 200,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $description;
 
@@ -43,7 +57,9 @@ class Product
      * @ORM\Column(type="decimal", precision=6, scale=2)
      * 
      * @Serializer\Expose
+     * 
      * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Positive(groups={"Create, "Modify"})
      */
     private $price;
 
@@ -51,7 +67,14 @@ class Product
      * @ORM\Column(type="string", length=255)
      * 
      * @Serializer\Expose
+     * 
      * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Length(
+     *  min = 10,
+     *  max = 50,
+     *  allowEmptyString = true,
+     *  groups={"Create", "Modify"}    
+     * )
      */
     private $serialNumber;
 

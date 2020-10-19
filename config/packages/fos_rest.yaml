@@ -15,5 +15,9 @@ fos_rest:
     exception:
         enabled: true
         map_exception_codes: true
-        codes: { App\Exception\ResourceValidationException: 400 }
+        codes:
+            {
+                App\Exception\ResourceValidationException: 400,
+                App\Exception\WrongPageException: 404,
+            }
         messages: { App\Exception\ResourceValidationException: true }

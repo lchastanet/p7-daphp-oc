@@ -4,20 +4,23 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Service\Paginator;
+use App\Service\ViolationsChecker;
 use App\Repository\ProductRepository;
 use FOS\RestBundle\Controller\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use App\Exception\ResourceValidationException;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
 
 class ProductController extends AbstractController
 {
     use ControllerTrait;
+    use ViolationsChecker;
 
     /**
      * @Rest\Get("/products", name="list_products")
@@ -28,6 +31,7 @@ class ProductController extends AbstractController
      *  description="The asked page"
      * )
      * @Rest\View()
+     * @IsGranted("ROLE_USER")
      */
     public function listProducts(ParamFetcherInterface $paramFetcher, ProductRepository $productRepository)
     {
@@ -43,6 +47,7 @@ class ProductController extends AbstractController
      *  requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 200)
+     * @IsGranted("ROLE_USER")
      */
     public function showProduct(Product $product)
     {
@@ -59,17 +64,11 @@ class ProductController extends AbstractController
      *      "validator"={ "groups"="Create" }
      *  }
      * )
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function createProduct(Product $product, ConstraintViolationList $violations)
     {
-        if (count($violations)) {
-            $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
-            foreach ($violations as $violation) {
-                $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
-            }
-
-            throw new ResourceValidationException($message);
-        }
+        $this->checkViolations($violations);
 
         $manager = $this->getDoctrine()->getManager();
 
@@ -87,17 +86,11 @@ class ProductController extends AbstractController
      *     requirements = {"id"="\d+"}
      * )
      * @ParamConverter("newProduct", converter="fos_rest.request_body")
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function updateProduct(Product $product, Product $newProduct, ConstraintViolationList $violations)
     {
-        if (count($violations)) {
-            $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
-            foreach ($violations as $violation) {
-                $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
-            }
-
-            throw new ResourceValidationException($message);
-        }
+        $this->checkViolations($violations);
 
         $product->setName($newProduct->getName());
         $product->setDescription($newProduct->getDescription());
@@ -116,6 +109,7 @@ class ProductController extends AbstractController
      *  requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 204)
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function deleteProduct(Product $product)
     {
