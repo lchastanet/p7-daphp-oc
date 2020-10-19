@@ -41,12 +41,12 @@ class Paginator
     private function getFilteredDataSet($filter)
     {
         $field = array_keys($filter)[0];
-        $id = $filter[$field];
+        $idTarget = $filter[$field];
 
         $this->totalItems = (int) $this->entityRepository
             ->createQueryBuilder('e')
             ->andWhere('e.' . $field . ' = :idClient')
-            ->setParameter('idClient', $id)
+            ->setParameter('idClient', $idTarget)
             ->select('count(e.id)')
             ->getQuery()
             ->getSingleScalarResult();
@@ -54,7 +54,7 @@ class Paginator
         return $this->entityRepository
             ->createQueryBuilder('e')
             ->andWhere('e.' . $field . ' = :idClient')
-            ->setParameter('idClient', $id)
+            ->setParameter('idClient', $idTarget)
             ->orderBy('e.id', $this->order)
             ->setMaxResults($this->limit)
             ->setFirstResult($this->offset)
@@ -72,17 +72,13 @@ class Paginator
 
         if ($page > 1) {
             $this->offset = (int) ceil($page * $this->limit);
-
-            if ($page == 2) {
-                $this->offset = $this->limit;
-            }
         }
 
-        if (empty($filter)) {
-            $dataSet = $this->getDataSet();
-        } else {
-            $dataSet = $this->getFilteredDataSet($filter);
+        if ($page === 2) {
+            $this->offset = $this->limit;
         }
+
+        $dataSet = $this->selectDataSet($filter);
 
         $this->totalPages = (int) ceil($this->totalItems / $this->limit);
 
@@ -95,6 +91,15 @@ class Paginator
         }
 
         return $dataSet;
+    }
+
+    private function selectDataSet($filter)
+    {
+        if (empty($filter)) {
+            return $this->getDataSet();
+        }
+
+        return $this->getFilteredDataSet($filter);
     }
 
     private function addMeta($dataSet)
