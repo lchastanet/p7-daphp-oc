@@ -12,8 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("userName")
- * 
- * @Serializer\ExclusionPolicy("ALL")
  */
 class User implements UserInterface
 {
@@ -22,14 +20,12 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -38,13 +34,13 @@ class User implements UserInterface
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $userName;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -53,13 +49,13 @@ class User implements UserInterface
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Email(groups={"Create", "Modify"})
@@ -70,16 +66,15 @@ class User implements UserInterface
      * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
      * 
-     * @Serializer\Expose
-     * 
      * @Assert\NotBlank(groups={"Create"})
+     * 
+     * @Serializer\MaxDepth(1)
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $client;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -94,7 +89,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="json")
      * 
-     * @Serializer\Expose
+     * @Serializer\Groups({"details", "edit"})
      */
     private $roles;
 

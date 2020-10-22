@@ -11,8 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ClientRepository::class)
- * 
- * @Serializer\ExclusionPolicy("ALL")
  */
 class Client
 {
@@ -21,14 +19,12 @@ class Client
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -37,13 +33,13 @@ class Client
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -52,13 +48,13 @@ class Client
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $address;
 
     /**
      * @ORM\Column(type="text")
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -67,13 +63,13 @@ class Client
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"}) 
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -82,13 +78,15 @@ class Client
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="client", orphanRemoval=true)
      * 
-     * @Serializer\Expose
+     * @Serializer\Groups({"details"})
      */
     private $users;
 

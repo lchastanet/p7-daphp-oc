@@ -41,7 +41,11 @@ class UserController extends AbstractController
      *  default="1",
      *  description="The asked page"
      * )
-     * @Rest\View(StatusCode = 200)
+     * @Rest\View(
+     *  StatusCode = 200,
+     *  serializerGroups={"list"},
+     *  serializerEnableMaxDepthChecks=true
+     * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      */
     public function listUsers(ParamFetcherInterface $paramFetcher, SecurityFilter $security)
@@ -65,7 +69,11 @@ class UserController extends AbstractController
      *  name = "show_user",
      *  requirements = {"id"="\d+"}
      * )
-     * @Rest\View(StatusCode = 200)
+     * @Rest\View(
+     *  StatusCode = 200,
+     *  serializerGroups={"details"},
+     *  serializerEnableMaxDepthChecks=true
+     * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      */
     public function showUser(User $user, SecurityFilter $security)
@@ -85,13 +93,17 @@ class UserController extends AbstractController
 
     /**
      * @Rest\Post("/users", name="create_user")
-     * @Rest\View(StatusCode = 201)
      * @ParamConverter(
      *  "user",
      *  converter="fos_rest.request_body",
      *  options={
      *      "validator"={ "groups"="Create" }
      *  }
+     * )
+     * @Rest\View(
+     *  StatusCode = 201,
+     *  serializerGroups={"details"},
+     *  serializerEnableMaxDepthChecks=true
      * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      */
@@ -120,13 +132,17 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\View(StatusCode = 200)
      * @Rest\Put(
      *     path = "/users/{id}",
      *     name = "update_user",
      *     requirements = {"id"="\d+"}
      * )
      * @ParamConverter("newUser", converter="fos_rest.request_body")
+     * @Rest\View(
+     *  StatusCode = 200,
+     *  serializerGroups={"details"},
+     *  serializerEnableMaxDepthChecks=true
+     * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      */
     public function updateUser(User $user, User $newUser, ConstraintViolationList $violations, SecurityFilter $security)

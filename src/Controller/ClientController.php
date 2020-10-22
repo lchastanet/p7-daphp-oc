@@ -29,7 +29,11 @@ class ClientController extends AbstractController
      *  default="1",
      *  description="The asked page"
      * )
-     * @Rest\View()
+     * @Rest\View(
+     *  StatusCode = 200,
+     *  serializerGroups={"list"},
+     *  serializerEnableMaxDepthChecks=true
+     * )
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function listClients(ParamFetcherInterface $paramFetcher, ClientRepository $clientRepository)
@@ -45,7 +49,11 @@ class ClientController extends AbstractController
      *  name = "show_client",
      *  requirements = {"id"="\d+"}
      * )
-     * @Rest\View(StatusCode = 200)
+     * @Rest\View(
+     *  StatusCode = 200,
+     *  serializerGroups={"detail"},
+     *  serializerEnableMaxDepthChecks=true
+     * )
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function showClient(Client $client)
@@ -55,13 +63,16 @@ class ClientController extends AbstractController
 
     /**
      * @Rest\Post("/clients", name="create_client")
-     * @Rest\View(StatusCode = 201)
      * @ParamConverter(
      *  "client",
      *  converter="fos_rest.request_body",
      *  options={
      *      "validator"={ "groups"="Create" }
      *  }
+     * )
+     * @Rest\View(
+     *  StatusCode = 201,
+     *  serializerGroups={"details"}
      * )
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
@@ -74,17 +85,21 @@ class ClientController extends AbstractController
         $manager->persist($client);
         $manager->flush();
 
-        return $this->view($client, Response::HTTP_CREATED, ['Location' => $this->generateUrl('show_client', ['id' => $client->getId(), UrlGeneratorInterface::ABSOLUTE_URL])]);
+        return $client;
     }
 
     /**
-     * @Rest\View(StatusCode = 200)
      * @Rest\Put(
      *     path = "/clients/{id}",
      *     name = "update_client",
      *     requirements = {"id"="\d+"}
      * )
      * @ParamConverter("newClient", converter="fos_rest.request_body")
+     * @Rest\View(
+     *  StatusCode = 200,
+     *  serializerGroups={"edit"},
+     *  serializerEnableMaxDepthChecks=true
+     * )
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function updateClient(Client $client, Client $newClient, ConstraintViolationList $violations)

@@ -9,8 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
- * 
- * @Serializer\ExclusionPolicy("ALL")
  */
 class Product
 {
@@ -19,14 +17,12 @@ class Product
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -35,13 +31,13 @@ class Product
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -50,23 +46,23 @@ class Product
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="decimal", precision=6, scale=2)
      * 
-     * @Serializer\Expose
-     * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Positive(groups={"Create"})
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -75,6 +71,8 @@ class Product
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $serialNumber;
 

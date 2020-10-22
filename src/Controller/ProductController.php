@@ -30,7 +30,11 @@ class ProductController extends AbstractController
      *  default="1",
      *  description="The asked page"
      * )
-     * @Rest\View()
+     * @Rest\View(
+     *  StatusCode = 200,
+     *  serializerGroups={"list"},
+     *  serializerEnableMaxDepthChecks=true
+     * )
      * @IsGranted("ROLE_USER")
      */
     public function listProducts(ParamFetcherInterface $paramFetcher, ProductRepository $productRepository)
@@ -46,7 +50,11 @@ class ProductController extends AbstractController
      *  name = "show_product",
      *  requirements = {"id"="\d+"}
      * )
-     * @Rest\View(StatusCode = 200)
+     * @Rest\View(
+     *  StatusCode = 200,
+     *  serializerGroups={"details"},
+     *  serializerEnableMaxDepthChecks=true
+     * )
      * @IsGranted("ROLE_USER")
      */
     public function showProduct(Product $product)
@@ -56,13 +64,17 @@ class ProductController extends AbstractController
 
     /**
      * @Rest\Post("/products", name="create_product")
-     * @Rest\View(StatusCode = 201)
      * @ParamConverter(
      *  "product",
      *  converter="fos_rest.request_body",
      *  options={
      *      "validator"={ "groups"="Create" }
      *  }
+     * )
+     * @Rest\View(
+     *  StatusCode = 201,
+     *  serializerGroups={"details"},
+     *  serializerEnableMaxDepthChecks=true
      * )
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
@@ -79,13 +91,17 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\View(StatusCode = 200)
      * @Rest\Put(
      *     path = "/products/{id}",
      *     name = "update_product",
      *     requirements = {"id"="\d+"}
      * )
      * @ParamConverter("newProduct", converter="fos_rest.request_body")
+     * @Rest\View(
+     *  StatusCode = 200,
+     *  serializerGroups={"edit"},
+     *  serializerEnableMaxDepthChecks=true
+     * )
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function updateProduct(Product $product, Product $newProduct, ConstraintViolationList $violations)
