@@ -51,7 +51,7 @@ class ClientController extends AbstractController
      * )
      * @Rest\View(
      *  StatusCode = 200,
-     *  serializerGroups={"detail"},
+     *  serializerGroups={"details"},
      *  serializerEnableMaxDepthChecks=true
      * )
      * @IsGranted("ROLE_SUPER_ADMIN")

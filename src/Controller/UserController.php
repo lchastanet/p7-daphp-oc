@@ -71,7 +71,7 @@ class UserController extends AbstractController
      * )
      * @Rest\View(
      *  StatusCode = 200,
-     *  serializerGroups={"details"},
+     *  serializerGroups={"details_user"},
      *  serializerEnableMaxDepthChecks=true
      * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
@@ -102,7 +102,7 @@ class UserController extends AbstractController
      * )
      * @Rest\View(
      *  StatusCode = 201,
-     *  serializerGroups={"details"},
+     *  serializerGroups={"details_user"},
      *  serializerEnableMaxDepthChecks=true
      * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
@@ -140,7 +140,7 @@ class UserController extends AbstractController
      * @ParamConverter("newUser", converter="fos_rest.request_body")
      * @Rest\View(
      *  StatusCode = 200,
-     *  serializerGroups={"details"},
+     *  serializerGroups={"details_user"},
      *  serializerEnableMaxDepthChecks=true
      * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")

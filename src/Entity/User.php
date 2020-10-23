@@ -8,10 +8,52 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("userName")
+ * 
+ * @Hateoas\Relation(
+ *  "self",
+ *  href = @Hateoas\Route(
+ *      "show_user",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "create",
+ *  href = @Hateoas\Route(
+ *      "create_user",
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "edit",
+ *  href = @Hateoas\Route(
+ *      "update_user",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "delete",
+ *  href = @Hateoas\Route(
+ *      "delete_user",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "client",
+ *  embedded = @Hateoas\Embedded("expr(object.getClient())"),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ * )
  */
 class User implements UserInterface
 {
@@ -20,7 +62,7 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Serializer\Groups({"list", "details", "edit"})
+     * @Serializer\Groups({"list", "details_user", "edit"})
      */
     private $id;
 
@@ -35,7 +77,7 @@ class User implements UserInterface
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit"})
+     * @Serializer\Groups({"list", "details_user", "edit"})
      */
     private $userName;
 
@@ -50,7 +92,7 @@ class User implements UserInterface
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit"})
+     * @Serializer\Groups({"list", "details_user", "edit"})
      */
     private $phoneNumber;
 
@@ -67,9 +109,6 @@ class User implements UserInterface
      * @ORM\JoinColumn(nullable=false)
      * 
      * @Assert\NotBlank(groups={"Create"})
-     * 
-     * @Serializer\MaxDepth(1)
-     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $client;
 
@@ -89,7 +128,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="json")
      * 
-     * @Serializer\Groups({"details", "edit"})
+     * @Serializer\Groups({"details_user", "edit"})
      */
     private $roles;
 

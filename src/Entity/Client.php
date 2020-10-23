@@ -8,9 +8,46 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=ClientRepository::class)
+ * 
+ * @Hateoas\Relation(
+ *  "self",
+ *  href = @Hateoas\Route(
+ *      "show_client",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "create",
+ *  href = @Hateoas\Route(
+ *      "create_client",
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "edit",
+ *  href = @Hateoas\Route(
+ *      "update_client",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "delete",
+ *  href = @Hateoas\Route(
+ *      "delete_client",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
  */
 class Client
 {
@@ -19,7 +56,7 @@ class Client
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Serializer\Groups({"list", "details", "edit"})
+     * @Serializer\Groups({"list", "details", "edit", "details_user"})
      */
     private $id;
 
@@ -34,7 +71,7 @@ class Client
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit"})
+     * @Serializer\Groups({"list", "details", "edit", "details_user"})
      */
     private $name;
 
@@ -49,7 +86,7 @@ class Client
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit"})
+     * @Serializer\Groups({"list", "details", "edit", "details_user"})
      */
     private $address;
 
@@ -64,7 +101,7 @@ class Client
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit"}) 
+     * @Serializer\Groups({"list", "details", "edit", "details_user"}) 
      */
     private $description;
 
@@ -79,14 +116,12 @@ class Client
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit"})
+     * @Serializer\Groups({"list", "details", "edit", "details_user"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="client", orphanRemoval=true)
-     * 
-     * @Serializer\Groups({"details"})
      */
     private $users;
 
