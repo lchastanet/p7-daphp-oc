@@ -4,15 +4,19 @@ namespace App\Controller;
 
 use App\Entity\Client;
 use App\Service\Paginator;
+use OpenApi\Annotations as OA;
 use App\Service\ViolationsChecker;
 use App\Repository\ClientRepository;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use FOS\RestBundle\Controller\ControllerTrait;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+
+
 
 class ClientController extends AbstractController
 {
@@ -33,6 +37,35 @@ class ClientController extends AbstractController
      *  serializerEnableMaxDepthChecks=true
      * )
      * @IsGranted("ROLE_SUPER_ADMIN")
+     * @OA\Response(
+     *  response=200,
+     *  description="Returns the paginated list of all clients",
+     *  @OA\JsonContent(
+     *      type="array",
+     *      @OA\Items(ref=@Model(type=Client::class, groups={"list"}))
+     *  )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="The page you want to load",
+     *     @OA\Schema(type="integer")
+     * )
+     * @OA\Response(
+     *  response=404,
+     *  description="The page that you are looking for, does not exist!",
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Tag(name="clients")
      */
     public function listClients(ParamFetcherInterface $paramFetcher, ClientRepository $clientRepository)
     {
@@ -53,6 +86,32 @@ class ClientController extends AbstractController
      *  serializerEnableMaxDepthChecks=true
      * )
      * @IsGranted("ROLE_SUPER_ADMIN")
+     * @OA\Response(
+     *  response=200,
+     *  description="Returns the chosen client",
+     *  @Model(type=Client::class, groups={"details"})
+     * )
+     * @OA\Parameter(
+     *  name="id",
+     *  in="path",
+     *  description="ID of the client you want to see",
+     *  @OA\Schema(type="integer")
+     * )
+     * @OA\Response(
+     *  response=404,
+     *  description="App\\Entity\\Client object not found by the @ParamConverter annotation.",
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Tag(name="clients")
      */
     public function showClient(Client $client)
     {
@@ -73,6 +132,33 @@ class ClientController extends AbstractController
      *  serializerGroups={"details"}
      * )
      * @IsGranted("ROLE_SUPER_ADMIN")
+     * @OA\Response(
+     *  response=201,
+     *  description="Returns created client",
+     *  @Model(type=Client::class, groups={"details"})
+     * )
+     * @OA\Parameter(
+     *  name="Client",
+     *  in="query",
+     *  @Model(type=Client::class, groups={"create"}),
+     *  required=true,
+     *  description="The client object"
+     * )
+     * @OA\Response(
+     *  response=400,
+     *  description="The JSON sent contains invalid data. Here are the errors you need to correct: Field {property}: {message}"
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Tag(name="clients")
      */
     public function createClient(Client $client, ConstraintViolationList $violations)
     {
@@ -99,6 +185,43 @@ class ClientController extends AbstractController
      *  serializerEnableMaxDepthChecks=true
      * )
      * @IsGranted("ROLE_SUPER_ADMIN")
+     * @OA\Response(
+     *  response=200,
+     *  description="Returns modified client",
+     *  @Model(type=Client::class, groups={"details"})
+     * )
+     * @OA\Parameter(
+     *  name="Client",
+     *  in="query",
+     *  @Model(type=Client::class, groups={"create"}),
+     *  required=true,
+     *  description="The client object"
+     * )
+     * @OA\Parameter(
+     *  name="id",
+     *  in="path",
+     *  description="ID of the client you want to see",
+     *  @OA\Schema(type="integer")
+     * )
+     * @OA\Response(
+     *  response=400,
+     *  description="The JSON sent contains invalid data. Here are the errors you need to correct: Field {property}: {message}"
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Response(
+     *  response=404,
+     *  description="App\\Entity\\Client object not found by the @ParamConverter annotation.",
+     * )
+     * @OA\Tag(name="clients")
      */
     public function updateClient(Client $client, Client $newClient, ConstraintViolationList $violations)
     {
@@ -122,6 +245,31 @@ class ClientController extends AbstractController
      * )
      * @Rest\View(StatusCode = 204)
      * @IsGranted("ROLE_SUPER_ADMIN")
+     * @OA\Response(
+     *  response=204,
+     *  description="Returns an empty object"
+     * )
+     * @OA\Parameter(
+     *  name="id",
+     *  in="path",
+     *  description="ID of the client you want to delete",
+     *  @OA\Schema(type="integer")
+     * )
+     * @OA\Response(
+     *  response=404,
+     *  description="App\\Entity\\Client object not found by the @ParamConverter annotation.",
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Tag(name="clients")
      */
     public function deleteClient(Client $client)
     {

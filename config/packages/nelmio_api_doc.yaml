@@ -1,0 +1,11 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: OC Project 7
+            description: This is an awesome PHP project!
+            version: 1.0.0
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/clients
+            - ^/products
+            - ^/users

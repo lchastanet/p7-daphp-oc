@@ -71,7 +71,7 @@ class Client
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit", "details_user"})
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create"})
      */
     private $name;
 
@@ -86,7 +86,7 @@ class Client
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit", "details_user"})
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create"})
      */
     private $address;
 
@@ -101,7 +101,7 @@ class Client
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit", "details_user"}) 
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create"}) 
      */
     private $description;
 
@@ -116,7 +116,7 @@ class Client
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details", "edit", "details_user"})
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create"})
      */
     private $phoneNumber;
 
