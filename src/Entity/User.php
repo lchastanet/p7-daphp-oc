@@ -63,6 +63,7 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      * 
      * @Serializer\Groups({"list", "details_user", "edit"})
+     * @Serializer\Since("1.0")
      */
     private $id;
 
@@ -78,6 +79,7 @@ class User implements UserInterface
      * )
      * 
      * @Serializer\Groups({"list", "details_user", "edit"})
+     * @Serializer\Since("1.0")
      */
     private $userName;
 
@@ -93,6 +95,7 @@ class User implements UserInterface
      * )
      * 
      * @Serializer\Groups({"list", "details_user", "edit"})
+     * @Serializer\Since("1.0")
      */
     private $phoneNumber;
 
@@ -101,6 +104,9 @@ class User implements UserInterface
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Email(groups={"Create", "Modify"})
+     * 
+     * @Serializer\Groups({"list", "details_user", "edit"})
+     * @Serializer\Since("1.0")
      */
     private $email;
 
@@ -109,6 +115,8 @@ class User implements UserInterface
      * @ORM\JoinColumn(nullable=false)
      * 
      * @Assert\NotBlank(groups={"Create"})
+     * 
+     * @Serializer\Since("1.0")
      */
     private $client;
 
@@ -122,6 +130,8 @@ class User implements UserInterface
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Since("1.0")
      */
     private $password;
 
@@ -129,6 +139,7 @@ class User implements UserInterface
      * @ORM\Column(type="json")
      * 
      * @Serializer\Groups({"details_user", "edit"})
+     * @Serializer\Since("1.0")
      */
     private $roles;
 
