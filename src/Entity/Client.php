@@ -20,7 +20,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      parameters = { "id" = "expr(object.getId())" },
  *      absolute = true
  *  ),
- *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit", "details_user"})
  * )
  * @Hateoas\Relation(
  *  "create",
@@ -56,7 +56,7 @@ class Client
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Serializer\Groups({"list", "details", "edit", "details_user"})
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create_user"})
      */
     private $id;
 

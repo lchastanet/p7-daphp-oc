@@ -54,7 +54,7 @@ class Product
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Serializer\Groups({"list", "details", "edit"})
+     * @Serializer\Groups({"list", "details"})
      */
     private $id;
 

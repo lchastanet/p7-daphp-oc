@@ -7,18 +7,17 @@ use App\Service\Paginator;
 use App\Repository\UserRepository;
 use App\Service\ViolationsChecker;
 use FOS\RestBundle\Controller\ControllerTrait;
-use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security as SecurityFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-
 
 class UserController extends AbstractController
 {
@@ -46,6 +45,35 @@ class UserController extends AbstractController
      *  serializerEnableMaxDepthChecks=true
      * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
+     * @OA\Response(
+     *  response=200,
+     *  description="Returns the paginated list of all users",
+     *  @OA\JsonContent(
+     *      type="array",
+     *      @OA\Items(ref=@Model(type=User::class, groups={"list"}))
+     *  )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="The page you want to load",
+     *     @OA\Schema(type="integer")
+     * )
+     * @OA\Response(
+     *  response=404,
+     *  description="The page that you are looking for, does not exist!",
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Tag(name="users")
      */
     public function listUsers(ParamFetcherInterface $paramFetcher, SecurityFilter $security)
     {
@@ -74,6 +102,36 @@ class UserController extends AbstractController
      *  serializerEnableMaxDepthChecks=true
      * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
+     * @OA\Response(
+     *  response=200,
+     *  description="Returns the chosen user",
+     *  @Model(type=User::class, groups={"details_user"})
+     * )
+     * @OA\Parameter(
+     *  name="id",
+     *  in="path",
+     *  description="ID of the user you want to see",
+     *  @OA\Schema(type="integer")
+     * )
+     * @OA\Response(
+     *  response=404,
+     *  description="App\\Entity\\User object not found by the @ParamConverter annotation.",
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Tag(name="users")
      */
     public function showUser(User $user, SecurityFilter $security)
     {
@@ -105,6 +163,37 @@ class UserController extends AbstractController
      *  serializerEnableMaxDepthChecks=true
      * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
+     * @OA\Response(
+     *  response=201,
+     *  description="Returns created user",
+     *  @Model(type=User::class, groups={"create_user"})
+     * )
+     * @OA\Parameter(
+     *  name="User",
+     *  in="query",
+     *  @Model(type=User::class, groups={"create_user"}),
+     *  required=true,
+     *  description="The user object"
+     * )
+     * @OA\Response(
+     *  response=400,
+     *  description="The JSON sent contains invalid data. Here are the errors you need to correct: Field {property}: {message}"
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
+     * )
+     * @OA\Tag(name="users")
      */
     public function createUser(User $user, ConstraintViolationList $violations, SecurityFilter $security, UserPasswordEncoderInterface $encoder)
     {
@@ -127,7 +216,7 @@ class UserController extends AbstractController
         $manager->persist($user);
         $manager->flush();
 
-        return $this->view($user, Response::HTTP_CREATED, ['Location' => $this->generateUrl('show_user', ['id' => $user->getId(), UrlGeneratorInterface::ABSOLUTE_URL])]);
+        return $user;
     }
 
     /**
@@ -143,8 +232,49 @@ class UserController extends AbstractController
      *  serializerEnableMaxDepthChecks=true
      * )
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
+     * @OA\Response(
+     *  response=200,
+     *  description="Returns modified user",
+     *  @Model(type=User::class, groups={"details_user"})
+     * )
+     * @OA\Parameter(
+     *  name="user",
+     *  in="query",
+     *  @Model(type=User::class, groups={"create_user"}),
+     *  required=true,
+     *  description="The client object"
+     * )
+     * @OA\Parameter(
+     *  name="id",
+     *  in="path",
+     *  description="ID of the user you want to modify",
+     *  @OA\Schema(type="integer")
+     * )
+     * @OA\Response(
+     *  response=400,
+     *  description="The JSON sent contains invalid data. Here are the errors you need to correct: Field {property}: {message}"
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Response(
+     *  response=404,
+     *  description="App\\Entity\\User object not found by the @ParamConverter annotation.",
+     * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
+     * )
+     * @OA\Tag(name="users")
      */
-    public function updateUser(User $user, User $newUser, ConstraintViolationList $violations, SecurityFilter $security)
+    public function updateUser(User $user, User $newUser, ConstraintViolationList $violations, SecurityFilter $security, UserPasswordEncoderInterface $encoder)
     {
         $this->checkViolations($violations);
 
@@ -157,14 +287,30 @@ class UserController extends AbstractController
 
             $user->setRoles(["ROLE_USER"]);
         } else {
-            $user->setRoles($newUser->getRoles());
+            if ($newUser->getRoles()) {
+                $user->setRoles($newUser->getRoles());
+            }
         }
 
-        $user->setUserName($newUser->getUserName());
-        $user->setPassword($newUser->getPassword());
-        $user->setEmail($newUser->getEmail());
-        $user->setPhoneNumber($newUser->getPhoneNumber());
-        $user->setClient($newUser->getClient());
+        if ($newUser->getUserName()) {
+            $user->setUserName($newUser->getUserName());
+        }
+
+        if ($newUser->getPassword()) {
+            $user->setPassword($encoder->encodePassword($user, $newUser->getPassword()));
+        }
+
+        if ($newUser->getEmail()) {
+            $user->setEmail($newUser->getEmail());
+        }
+
+        if ($newUser->getPhoneNumber()) {
+            $user->setPhoneNumber($newUser->getPhoneNumber());
+        }
+
+        if ($newUser->getClient()) {
+            $user->setClient($newUser->getClient());
+        }
 
         $this->getDoctrine()->getManager()->flush();
 
@@ -179,6 +325,36 @@ class UserController extends AbstractController
      * )
      * @Rest\View(StatusCode = 204)
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
+     * @OA\Response(
+     *  response=204,
+     *  description="Returns an empty object",
+     *  @Model(type=User::class, groups={"deleted"})
+     * )
+     * @OA\Parameter(
+     *  name="id",
+     *  in="path",
+     *  description="ID of the user you want to delete",
+     *  @OA\Schema(type="integer")
+     * )
+     * @OA\Response(
+     *  response=404,
+     *  description="App\\Entity\\User object not found by the @ParamConverter annotation.",
+     * )
+     * @OA\Response(
+     *  response=401,
+     *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Parameter(
+     *  name="Authorization",
+     *  in="header",
+     *  required=true,
+     *  description="Bearer Token"
+     * )
+     * @OA\Response(
+     *  response=403,
+     *  description="You don't have the rights for deleting this user.",
+     * )
+     * @OA\Tag(name="users")
      */
     public function deleteUser(User $user, SecurityFilter $security)
     {

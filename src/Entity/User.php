@@ -9,10 +9,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hateoas\Configuration\Annotation as Hateoas;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("userName")
+ * 
+ * @Serializer\ExclusionPolicy("all")
  * 
  * @Hateoas\Relation(
  *  "self",
@@ -47,12 +50,12 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      parameters = { "id" = "expr(object.getId())" },
  *      absolute = true
  *  ),
- *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit", "create_user"})
  * )
  * @Hateoas\Relation(
  *  "client",
  *  embedded = @Hateoas\Embedded("expr(object.getClient())"),
- *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit", "create_user"})
  * )
  */
 class User implements UserInterface
@@ -62,6 +65,7 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
+     * @Serializer\Expose
      * @Serializer\Groups({"list", "details_user", "edit"})
      * @Serializer\Since("1.0")
      */
@@ -78,7 +82,8 @@ class User implements UserInterface
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details_user", "edit"})
+     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details_user", "edit", "create_user"})
      * @Serializer\Since("1.0")
      */
     private $userName;
@@ -94,7 +99,8 @@ class User implements UserInterface
      *  groups={"Create", "Modify"}    
      * )
      * 
-     * @Serializer\Groups({"list", "details_user", "edit"})
+     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details_user", "edit", "create_user"})
      * @Serializer\Since("1.0")
      */
     private $phoneNumber;
@@ -105,7 +111,8 @@ class User implements UserInterface
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Email(groups={"Create", "Modify"})
      * 
-     * @Serializer\Groups({"list", "details_user", "edit"})
+     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details_user", "edit", "create_user"})
      * @Serializer\Since("1.0")
      */
     private $email;
@@ -116,6 +123,8 @@ class User implements UserInterface
      * 
      * @Assert\NotBlank(groups={"Create"})
      * 
+     * @Serializer\Expose
+     * @Serializer\Groups({"edit", "create_user"})
      * @Serializer\Since("1.0")
      */
     private $client;
@@ -131,6 +140,8 @@ class User implements UserInterface
      *  groups={"Create", "Modify"}    
      * )
      * 
+     * @Serializer\Expose
+     * @Serializer\Groups({"edit", "create_user"})
      * @Serializer\Since("1.0")
      */
     private $password;
@@ -138,7 +149,10 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="json")
      * 
-     * @Serializer\Groups({"details_user", "edit"})
+     * @Type("array")
+     * 
+     * @Serializer\Expose
+     * @Serializer\Groups({"details_user", "edit", "create_user"})
      * @Serializer\Since("1.0")
      */
     private $roles;
@@ -211,11 +225,9 @@ class User implements UserInterface
     /**
      * Get the value of roles
      */
-    public function getRoles(): array
+    public function getRoles(): ?array
     {
         $roles = $this->roles;
-
-        $roles[] = 'ROLE_USER';
 
         return $roles;
     }

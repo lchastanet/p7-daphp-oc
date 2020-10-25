@@ -200,7 +200,7 @@ class ClientController extends AbstractController
      * @OA\Parameter(
      *  name="id",
      *  in="path",
-     *  description="ID of the client you want to see",
+     *  description="ID of the client you want to modify",
      *  @OA\Schema(type="integer")
      * )
      * @OA\Response(
@@ -247,7 +247,8 @@ class ClientController extends AbstractController
      * @IsGranted("ROLE_SUPER_ADMIN")
      * @OA\Response(
      *  response=204,
-     *  description="Returns an empty object"
+     *  description="Returns an empty object",
+     *  @Model(type=Client::class, groups={"deleted"})
      * )
      * @OA\Parameter(
      *  name="id",
@@ -268,6 +269,10 @@ class ClientController extends AbstractController
      *  in="header",
      *  required=true,
      *  description="Bearer Token"
+     * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
      * )
      * @OA\Tag(name="clients")
      */
