@@ -229,10 +229,21 @@ class ProductController extends AbstractController
     {
         $this->checkViolations($violations);
 
-        $product->setName($newProduct->getName());
-        $product->setDescription($newProduct->getDescription());
-        $product->setPrice($newProduct->getPrice());
-        $product->setSerialNumber($newProduct->getSerialNumber());
+        if ($newProduct->getName()) {
+            $product->setName($newProduct->getName());
+        }
+
+        if ($newProduct->getDescription()) {
+            $product->setDescription($newProduct->getDescription());
+        }
+
+        if ($newProduct->getPrice()) {
+            $product->setPrice($newProduct->getPrice());
+        }
+
+        if ($newProduct->getSerialNumber()) {
+            $product->setSerialNumber($newProduct->getSerialNumber());
+        }
 
         $this->getDoctrine()->getManager()->flush();
 

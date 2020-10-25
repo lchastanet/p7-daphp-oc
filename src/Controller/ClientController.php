@@ -227,10 +227,21 @@ class ClientController extends AbstractController
     {
         $this->checkViolations($violations);
 
-        $client->setName($newClient->getName());
-        $client->setDescription($newClient->getDescription());
-        $client->setPhoneNumber($newClient->getPhoneNumber());
-        $client->setAddress($newClient->getAddress());
+        if ($newClient->getName()) {
+            $client->setName($newClient->getName());
+        }
+
+        if ($newClient->getPhoneNumber()) {
+            $client->setDescription($newClient->getPhoneNumber());
+        }
+
+        if ($newClient->getName()) {
+            $client->setPhoneNumber($newClient->getName());
+        }
+
+        if ($newClient->getAddress()) {
+            $client->setAddress($newClient->getAddress());
+        }
 
         $this->getDoctrine()->getManager()->flush();
 
