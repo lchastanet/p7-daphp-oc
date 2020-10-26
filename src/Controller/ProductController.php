@@ -19,8 +19,6 @@ use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
-
-
 class ProductController extends AbstractController
 {
     use ControllerTrait;
