@@ -17,6 +17,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+
 
 
 class ProductController extends AbstractController
@@ -86,7 +88,7 @@ class ProductController extends AbstractController
      *  serializerGroups={"details"},
      *  serializerEnableMaxDepthChecks=true
      * )
-     * @IsGranted("ROLE_USER")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      * @OA\Response(
      *  response=200,
      *  description="Returns the chosen product",
