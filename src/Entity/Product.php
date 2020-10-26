@@ -6,11 +6,46 @@ use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
  * 
- * @Serializer\ExclusionPolicy("ALL")
+ * @Hateoas\Relation(
+ *  "self",
+ *  href = @Hateoas\Route(
+ *      "show_product",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "create",
+ *  href = @Hateoas\Route(
+ *      "create_product",
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "edit",
+ *  href = @Hateoas\Route(
+ *      "update_product",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "delete",
+ *  href = @Hateoas\Route(
+ *      "delete_product",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
  */
 class Product
 {
@@ -19,14 +54,12 @@ class Product
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -35,13 +68,13 @@ class Product
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -50,23 +83,23 @@ class Product
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="decimal", precision=6, scale=2)
      * 
-     * @Serializer\Expose
-     * 
      * @Assert\NotBlank(groups={"Create"})
-     * @Assert\Positive(groups={"Create, "Modify"})
+     * @Assert\Positive(groups={"Create"})
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -75,6 +108,8 @@ class Product
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit"})
      */
     private $serialNumber;
 

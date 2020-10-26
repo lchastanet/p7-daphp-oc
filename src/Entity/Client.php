@@ -7,12 +7,47 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
-
+use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=ClientRepository::class)
  * 
- * @Serializer\ExclusionPolicy("ALL")
+ * @Hateoas\Relation(
+ *  "self",
+ *  href = @Hateoas\Route(
+ *      "show_client",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit", "details_user"})
+ * )
+ * @Hateoas\Relation(
+ *  "create",
+ *  href = @Hateoas\Route(
+ *      "create_client",
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "edit",
+ *  href = @Hateoas\Route(
+ *      "update_client",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "delete",
+ *  href = @Hateoas\Route(
+ *      "delete_client",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details", "edit"})
+ * )
  */
 class Client
 {
@@ -20,14 +55,13 @@ class Client
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Serializer\Expose
+     * 
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create_user"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -36,13 +70,13 @@ class Client
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -51,13 +85,13 @@ class Client
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create"})
      */
     private $address;
 
     /**
      * @ORM\Column(type="text")
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -66,13 +100,13 @@ class Client
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create"}) 
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -81,12 +115,13 @@ class Client
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Groups({"list", "details", "edit", "details_user", "create"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="client", orphanRemoval=true)
-     * @Serializer\Expose
      */
     private $users;
 

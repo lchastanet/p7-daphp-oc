@@ -6,6 +6,8 @@ fos_rest:
     view:
         formats: { json: true, xml: false, rss: false }
         view_response_listener: true
+        mime_types:
+            json: ["application/json", "application/json;version=1.0"]
     serializer:
         serialize_null: true
     format_listener:
@@ -21,3 +23,9 @@ fos_rest:
                 App\Exception\WrongPageException: 404,
             }
         messages: { App\Exception\ResourceValidationException: true }
+    versioning:
+        enabled: true
+        resolvers:
+            media_type: # Accept header
+                enabled: true
+                regex: '/(v|version)=(?P<version>[0-9\.]+)/'

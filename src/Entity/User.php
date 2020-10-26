@@ -8,13 +8,55 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Hateoas\Configuration\Annotation as Hateoas;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("userName")
  * 
- * @Serializer\ExclusionPolicy("ALL")
+ * @Serializer\ExclusionPolicy("all")
+ * 
+ * @Hateoas\Relation(
+ *  "self",
+ *  href = @Hateoas\Route(
+ *      "show_user",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "create",
+ *  href = @Hateoas\Route(
+ *      "create_user",
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "edit",
+ *  href = @Hateoas\Route(
+ *      "update_user",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit"})
+ * )
+ * @Hateoas\Relation(
+ *  "delete",
+ *  href = @Hateoas\Route(
+ *      "delete_user",
+ *      parameters = { "id" = "expr(object.getId())" },
+ *      absolute = true
+ *  ),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit", "create_user"})
+ * )
+ * @Hateoas\Relation(
+ *  "client",
+ *  embedded = @Hateoas\Embedded("expr(object.getClient())"),
+ *  exclusion = @Hateoas\Exclusion(groups={"details_user", "edit", "create_user"})
+ * )
  */
 class User implements UserInterface
 {
@@ -24,13 +66,13 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      * 
      * @Serializer\Expose
+     * @Serializer\Groups({"list", "details_user", "edit"})
+     * @Serializer\Since("1.0")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -39,13 +81,15 @@ class User implements UserInterface
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details_user", "edit", "create_user"})
+     * @Serializer\Since("1.0")
      */
     private $userName;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -54,16 +98,22 @@ class User implements UserInterface
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details_user", "edit", "create_user"})
+     * @Serializer\Since("1.0")
      */
     private $phoneNumber;
 
     /**
      * @ORM\Column(type="string", length=255)
      * 
-     * @Serializer\Expose
-     * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Email(groups={"Create", "Modify"})
+     * 
+     * @Serializer\Expose
+     * @Serializer\Groups({"list", "details_user", "edit", "create_user"})
+     * @Serializer\Since("1.0")
      */
     private $email;
 
@@ -71,16 +121,16 @@ class User implements UserInterface
      * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
      * 
-     * @Serializer\Expose
-     * 
      * @Assert\NotBlank(groups={"Create"})
+     * 
+     * @Serializer\Expose
+     * @Serializer\Groups({"edit", "create_user"})
+     * @Serializer\Since("1.0")
      */
     private $client;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * 
-     * @Serializer\Expose
      * 
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Length(
@@ -89,13 +139,21 @@ class User implements UserInterface
      *  allowEmptyString = true,
      *  groups={"Create", "Modify"}    
      * )
+     * 
+     * @Serializer\Expose
+     * @Serializer\Groups({"edit", "create_user"})
+     * @Serializer\Since("1.0")
      */
     private $password;
 
     /**
      * @ORM\Column(type="json")
      * 
+     * @Type("array")
+     * 
      * @Serializer\Expose
+     * @Serializer\Groups({"details_user", "edit", "create_user"})
+     * @Serializer\Since("1.0")
      */
     private $roles;
 
@@ -167,11 +225,9 @@ class User implements UserInterface
     /**
      * Get the value of roles
      */
-    public function getRoles(): array
+    public function getRoles(): ?array
     {
         $roles = $this->roles;
-
-        $roles[] = 'ROLE_USER';
 
         return $roles;
     }
