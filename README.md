@@ -20,8 +20,6 @@ $ openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rs
 $ openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout
 ```
 
-
-
 Then create or modify the **.env** file to connect to your mysql installation and setup the mail server
 
 ```shell
@@ -39,19 +37,19 @@ php bin/console doctrine:database:create
 
 Then load the initial dataset into database
 
-```
+```shell
 php bin/console doctrine:fixtures:load
 ```
 
 And finally run the dev server to test app
 
-- if you have installed the symfony cli tool :
+-   if you have installed the symfony cli tool :
 
 ```shell
 symfony serve
 ```
 
-- if you don't have installed the symfony cli tool :
+-   if you don't have installed the symfony cli tool :
 
 ```shell
 php -S localhost:8000 -t public
