@@ -299,10 +299,6 @@ class ClientController extends AbstractController
      *  response=403,
      *  description="Access denied.",
      * )
-     * @OA\Response(
-     *  response=403,
-     *  description="Access denied.",
-     * )
      * @OA\Tag(name="clients")
      */
     public function deleteClient(Client $client)

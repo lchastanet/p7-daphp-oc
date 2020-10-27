@@ -293,10 +293,6 @@ class ProductController extends AbstractController
      *  response=403,
      *  description="Access denied.",
      * )
-     * @OA\Response(
-     *  response=403,
-     *  description="Access denied.",
-     * )
      * @OA\Tag(name="products")
      */
     public function deleteProduct(Product $product)
