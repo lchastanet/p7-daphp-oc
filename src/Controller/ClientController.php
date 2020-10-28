@@ -16,8 +16,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-
-
 class ClientController extends AbstractController
 {
     use ControllerTrait;
@@ -65,6 +63,10 @@ class ClientController extends AbstractController
      *  required=true,
      *  description="Bearer Token"
      * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
+     * )
      * @OA\Tag(name="clients")
      */
     public function listClients(ParamFetcherInterface $paramFetcher, ClientRepository $clientRepository)
@@ -110,6 +112,10 @@ class ClientController extends AbstractController
      *  in="header",
      *  required=true,
      *  description="Bearer Token"
+     * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
      * )
      * @OA\Tag(name="clients")
      */
@@ -157,6 +163,10 @@ class ClientController extends AbstractController
      * @OA\Response(
      *  response=401,
      *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
+     * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
      * )
      * @OA\Tag(name="clients")
      */
@@ -221,6 +231,10 @@ class ClientController extends AbstractController
      *  response=404,
      *  description="App\\Entity\\Client object not found by the @ParamConverter annotation.",
      * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
+     * )
      * @OA\Tag(name="clients")
      */
     public function updateClient(Client $client, Client $newClient, ConstraintViolationList $violations)
@@ -232,11 +246,11 @@ class ClientController extends AbstractController
         }
 
         if ($newClient->getPhoneNumber()) {
-            $client->setDescription($newClient->getPhoneNumber());
+            $client->setPhoneNumber($newClient->getPhoneNumber());
         }
 
-        if ($newClient->getName()) {
-            $client->setPhoneNumber($newClient->getName());
+        if ($newClient->getDescription()) {
+            $client->setDescription($newClient->getDescription());
         }
 
         if ($newClient->getAddress()) {

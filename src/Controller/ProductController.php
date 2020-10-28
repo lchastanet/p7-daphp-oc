@@ -7,19 +7,15 @@ use App\Service\Paginator;
 use App\Service\ViolationsChecker;
 use App\Repository\ProductRepository;
 use FOS\RestBundle\Controller\ControllerTrait;
-use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
-
 
 class ProductController extends AbstractController
 {
@@ -39,7 +35,7 @@ class ProductController extends AbstractController
      *  serializerGroups={"list"},
      *  serializerEnableMaxDepthChecks=true
      * )
-     * @IsGranted("ROLE_USER")
+     * @Security("is_granted('ROLE_USER') or is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      * @OA\Response(
      *  response=200,
      *  description="Returns the paginated list of all products",
@@ -88,7 +84,7 @@ class ProductController extends AbstractController
      *  serializerGroups={"details"},
      *  serializerEnableMaxDepthChecks=true
      * )
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
+     * @Security("is_granted('ROLE_USER') or is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')")
      * @OA\Response(
      *  response=200,
      *  description="Returns the chosen product",
@@ -162,6 +158,10 @@ class ProductController extends AbstractController
      *  response=401,
      *  description="Expired JWT Token | JWT Token not found | Invalid JWT Token",
      * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
+     * )
      * @OA\Tag(name="products")
      */
     public function createProduct(Product $product, ConstraintViolationList $violations)
@@ -173,7 +173,7 @@ class ProductController extends AbstractController
         $manager->persist($product);
         $manager->flush();
 
-        return $this->view($product, Response::HTTP_CREATED, ['Location' => $this->generateUrl('show_product', ['id' => $product->getId(), UrlGeneratorInterface::ABSOLUTE_URL])]);
+        return $product;
     }
 
     /**
@@ -224,6 +224,10 @@ class ProductController extends AbstractController
      * @OA\Response(
      *  response=404,
      *  description="App\\Entity\\Product object not found by the @ParamConverter annotation.",
+     * )
+     * @OA\Response(
+     *  response=403,
+     *  description="Access denied.",
      * )
      * @OA\Tag(name="products")
      */
